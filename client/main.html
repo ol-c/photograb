@@ -1,0 +1,27 @@
+<head>
+  <title>photograb</title>
+</head>
+
+<body>
+  {{> photograb}}
+</body>
+
+<template name="photograb">
+  <div class="photograb">
+    <img src="{{imageSrc}}">
+    <svg width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
+      {{#each mask }}{{> mask}}{{/each}}
+      {{#each marks}}{{> mark}}{{/each}}
+      {{> mark currentMark }}
+    </svg>
+  </div>
+</template>
+
+<template name="mask">
+  <path class="mask" d="{{path}}"/>
+</template>
+
+<template name="mark">
+  <path class="mark" d="{{path}}" stroke="{{stroke}}" stroke-width="{{strokeWidth}}" fill="none"/>
+  <path class="mark" d="{{path}}" stroke="{{targetStroke}}" stroke-width="{{targetStrokeWidth}}" fill="none"/>
+</template>

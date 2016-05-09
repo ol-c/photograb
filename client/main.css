@@ -1,0 +1,23 @@
+body
+{
+  margin : 0;
+  user-select : none;
+}
+
+.photograb
+{
+  position : relative;
+}
+
+.photograb img
+{
+  display : block;
+}
+
+.photograb svg
+{
+  display : block;
+  position : absolute;
+  top : 0;
+  left : 0;
+}
