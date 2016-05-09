@@ -10,7 +10,7 @@
   <div class="photograb">
     <img src="{{imageSrc}}">
     <svg width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
-      {{#each mask }}{{> mask}}{{/each}}
+      {{#each masks}}{{> mask}}{{/each}}
       {{#each marks}}{{> mark}}{{/each}}
       {{> mark currentMark }}
     </svg>
@@ -18,7 +18,8 @@
 </template>
 
 <template name="mask">
-  <path class="mask" d="{{path}}"/>
+  <path class="mask" d="{{path}}" stroke="{{stroke}}" fill="{{fill}}" stroke-width="{{strokeWidth}}"/>
+
 </template>
 
 <template name="mark">

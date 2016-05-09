@@ -46,11 +46,35 @@ Template.photograb.helpers({
   marks : function () {
     return Marks.find();
   },
+  masks : function () {
+    return Masks.find();
+  },
   width : function () {
     return Template.instance().width.get();
   },
   height : function () {
     return Template.instance().height.get();
+  }
+});
+
+Template.mask.helpers({
+  stroke : function () {
+    return 'none';
+  },
+  fill : function () {
+    return 'rgba(0,255,0,0.5)';
+  },
+  strokeWidth : function () {
+    return 1;
+  },
+  path : function () {
+    if (this.path[0]) {
+      var path = "M" + this.path[0][0] + ' ' + this.path[0][1];
+      this.path.forEach(function (point) {
+        path += 'L' + point[0] + ' ' + point[1];
+      });
+      return path + 'Z';
+    }
   }
 });
 

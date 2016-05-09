@@ -9,12 +9,19 @@ function updateMasks() {
     };
     //  prevent max buffer exceeded error
     var options = {maxBuffer: 1024 * 500};
-    child_process.exec('python /home/jason/photograb/grabcut.py \'' + JSON.stringify(input) + '\'', options, function (err, stdout, stderr) {
+    var exec = Meteor.wrapAsync(child_process.exec);
+    exec('python /home/jason/photograb/grabcut.py \'' + JSON.stringify(input) + '\'', options, function (err, stdout, stderr) {
       if (err) {
         console.log(err);
       }
       else {
-        console.log(stdout);
+        Masks.remove({});
+        JSON.parse(stdout).forEach(function (perimeter) {
+          Masks.insert({
+            type:"foreground",
+            path:perimeter
+          });
+        });
       }
     });
   }
