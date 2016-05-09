@@ -2,14 +2,21 @@ Template.registerHelper('imageSrc', function () {
   return '/grasshopper.jpg'
 });
 
-function newMark() {
+function newMark(type, radius) {
   return {
     path : [],
-    type : 'foreground'
-  }
+    type : type,
+    radius : radius
+  };
 }
 
-var currentMark = new ReactiveVar(newMark());
+$(window).on('keypress', function (event) {
+  if (event.keyCode == 13) {
+    Meteor.call('updateForeground');
+  }
+});
+
+var currentMark = new ReactiveVar();
 var markUpdated = new ReactiveVar();
 
 Template.registerHelper('currentMark', function () {
@@ -20,7 +27,12 @@ Template.registerHelper('currentMark', function () {
 Template.photograb.onCreated(function () {
   this.width = new ReactiveVar(0);
   this.height = new ReactiveVar(0);
-})
+
+  this.mode = new ReactiveVar("probable_foreground");
+  this.probable_foreground_radius = new ReactiveVar(32);
+  this.foreground_radius = new ReactiveVar(4);
+  this.background_radius = new ReactiveVar(4);
+});
 
 Template.photograb.events({
   'load img' : function (event, template) {
@@ -29,16 +41,17 @@ Template.photograb.events({
   },
   'touch' : function (event, template) {
     markUpdated.set(new Date());
-    currentMark.set(newMark());
+    var mode = template.mode.get();
+    currentMark.set(newMark(mode,template[mode+'_radius'].get()));
   },
   'drag' : function (event, template) {
     markUpdated.set(new Date());
     currentMark.get().path.push([event.x, event.y]);
   },
-  'drop' : function () {
+  'drop' : function (event, template) {
     Meteor.call('addMark', currentMark.get());
     markUpdated.set(new Date());
-    currentMark.set(newMark());
+    currentMark.set();
   }
 });
 
@@ -62,7 +75,7 @@ Template.mask.helpers({
     return 'none';
   },
   fill : function () {
-    return 'rgba(0,255,0,0.5)';
+    return 'rgba(0,0,255,0.5)';
   },
   strokeWidth : function () {
     return 1;
@@ -80,17 +93,11 @@ Template.mask.helpers({
 
 
 Template.mark.helpers({
-  targetStroke : function () {
-    return 'rgba(0,0,0,0.01)';
-  },
-  targetStrokeWidth : function () {
-    return 16;
-  },
   stroke : function () {
-    return 'red';
+    return 'rgba(0,255,0,0.1)';
   },
   strokeWidth : function () {
-    return 1;
+    return this.radius*2;
   },
   path : function () {
     if (this.path[0]) {
@@ -106,5 +113,6 @@ Template.mark.helpers({
 Template.mark.events({
   tap : function (event, template) {
     Meteor.call('removeMark', this._id);
-  } 
+  },
+ 
 });

@@ -12,17 +12,26 @@
     <svg width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
       {{#each masks}}{{> mask}}{{/each}}
       {{#each marks}}{{> mark}}{{/each}}
-      {{> mark currentMark }}
+      {{#if currentMark}}{{> mark currentMark }}{{/if}}
     </svg>
   </div>
 </template>
 
 <template name="mask">
-  <path class="mask" d="{{path}}" stroke="{{stroke}}" fill="{{fill}}" stroke-width="{{strokeWidth}}"/>
+  <path class="mask"
+        d="{{path}}"
+        stroke="{{stroke}}"
+        fill="{{fill}}"
+        stroke-width="{{strokeWidth}}"/>
 
 </template>
 
 <template name="mark">
-  <path class="mark" d="{{path}}" stroke="{{stroke}}" stroke-width="{{strokeWidth}}" fill="none"/>
-  <path class="mark" d="{{path}}" stroke="{{targetStroke}}" stroke-width="{{targetStrokeWidth}}" fill="none"/>
+  <path class="mark"
+        d="{{path}}"
+        stroke="{{stroke}}"
+        fill="none"
+        stroke-width="{{strokeWidth}}"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
 </template>
