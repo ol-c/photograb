@@ -41,7 +41,7 @@ for mark in info['marks']:
     [np.array(mark['path'], np.int32).reshape((-1,1,2))],
     False,
     typeToGC_MASK[mark['type']],
-    thickness=mark['radius'])
+    thickness=mark['radius']*2)
 
 
 

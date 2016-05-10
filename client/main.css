@@ -21,3 +21,38 @@ body
   top : 0;
   left : 0;
 }
+
+.mask
+{
+  pointer-events : none;
+}
+
+.photograb-controls
+{
+  position : fixed;
+  display : flex;
+  align-items : center;
+  top : 0;
+  right : 0;
+}
+
+.photograb-probable-foreground
+{
+  display : inline-block;
+  background : rgba(0,255,0,0.5);
+  margin : 1em;
+}
+
+.photograb-foreground
+{
+  margin : 1em;
+  display : inline-block;
+  background : rgba(0,255,0,0.75);
+}
+
+.photograb-background
+{
+  margin : 1em;
+  display : inline-block;
+  background : rgba(255,0,0,0.5);
+}

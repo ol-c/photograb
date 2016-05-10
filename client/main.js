@@ -1,5 +1,7 @@
+var originalWidth = window.innerWidth;
+
 Template.registerHelper('imageSrc', function () {
-  return '/grasshopper.jpg'
+  return '/grasshopper.jpg';
 });
 
 function newMark(type, radius) {
@@ -27,11 +29,7 @@ Template.registerHelper('currentMark', function () {
 Template.photograb.onCreated(function () {
   this.width = new ReactiveVar(0);
   this.height = new ReactiveVar(0);
-
-  this.mode = new ReactiveVar("probable_foreground");
-  this.probable_foreground_radius = new ReactiveVar(32);
-  this.foreground_radius = new ReactiveVar(4);
-  this.background_radius = new ReactiveVar(4);
+  this.mode = new ReactiveVar("foreground");
 });
 
 Template.photograb.events({
@@ -41,8 +39,15 @@ Template.photograb.events({
   },
   'touch' : function (event, template) {
     markUpdated.set(new Date());
+    var scale = window.innerWidth/originalWidth;
     var mode = template.mode.get();
-    currentMark.set(newMark(mode,template[mode+'_radius'].get()));
+    currentMark.set(newMark(mode,Math.round(5*scale)));
+  },
+  'hold' : function (event, template) {
+    template.mode.set(template.mode.get() == 'foreground' ? 'background':'foreground');
+  },
+  'cursorImage' : function (event, template) {
+    return template.mode.get() == 'background' ? '/background-cursor.png':'/foreground-cursor.png';
   },
   'drag' : function (event, template) {
     markUpdated.set(new Date());
@@ -67,6 +72,12 @@ Template.photograb.helpers({
   },
   height : function () {
     return Template.instance().height.get();
+  },
+  control_radius : function (control) {
+    return Template.instance()[control + '_radius'].get();
+  },
+  control_diameter : function (control) {
+    return Template.instance()[control + '_radius'].get()*2;
   }
 });
 
@@ -75,7 +86,7 @@ Template.mask.helpers({
     return 'none';
   },
   fill : function () {
-    return 'rgba(0,0,255,0.5)';
+    return 'rgba(0,0,255,0.4)';
   },
   strokeWidth : function () {
     return 1;
@@ -94,7 +105,12 @@ Template.mask.helpers({
 
 Template.mark.helpers({
   stroke : function () {
-    return 'rgba(0,255,0,0.1)';
+    var typeToColor = {
+      'probable_foreground'  : 'rgba(0,255,0,0.25)',
+      'foreground'  : 'rgba(0,255,0,0.5)',
+      'background'  : 'rgba(255,0,0,0.5)'
+    }
+    return typeToColor[this.type];
   },
   strokeWidth : function () {
     return this.radius*2;

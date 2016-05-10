@@ -1,5 +1,6 @@
 <head>
   <title>photograb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -7,11 +8,11 @@
 </body>
 
 <template name="photograb">
-  <div class="photograb">
+  <div class="photograb" style="cursor:url({{cursorImage}});">
     <img src="{{imageSrc}}">
     <svg width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
-      {{#each masks}}{{> mask}}{{/each}}
       {{#each marks}}{{> mark}}{{/each}}
+      {{#each masks}}{{> mask}}{{/each}}
       {{#if currentMark}}{{> mark currentMark }}{{/if}}
     </svg>
   </div>
