@@ -1,0 +1,7 @@
+X view extracted (can download/save natively)
+X remove internal segments
+X transparency mask for better edge rendering
+reliable zoom sizing
+visual feedback for grabcutting in progress (show unresolved marks on output?)
+side-by-side input and output
+show instructions

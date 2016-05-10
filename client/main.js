@@ -4,6 +4,15 @@ Template.registerHelper('imageSrc', function () {
   return '/grasshopper.jpg';
 });
 
+Template.registerHelper('imageGrabcutMaskSrc', function () {
+  return '/grasshopper.jpg-grabcut-mask.png';
+});
+
+
+Template.registerHelper('imageGrabcutSrc', function () {
+  return '/grasshopper.jpg-grabcut.png';
+});
+
 function newMark(type, radius) {
   return {
     path : [],
@@ -11,12 +20,6 @@ function newMark(type, radius) {
     radius : radius
   };
 }
-
-$(window).on('keypress', function (event) {
-  if (event.keyCode == 13) {
-    Meteor.call('updateForeground');
-  }
-});
 
 var currentMark = new ReactiveVar();
 var markUpdated = new ReactiveVar();
@@ -33,6 +36,7 @@ Template.photograb.onCreated(function () {
 });
 
 Template.photograb.events({
+  'mousedown' : function (event, template) {event.preventDefault();},
   'load img' : function (event, template) {
     template.width.set(event.target.width);
     template.height.set(event.target.height);
@@ -43,20 +47,21 @@ Template.photograb.events({
     var mode = template.mode.get();
     currentMark.set(newMark(mode,Math.round(5*scale)));
   },
-  'hold' : function (event, template) {
+  'tap' : function (event, template) {
     template.mode.set(template.mode.get() == 'foreground' ? 'background':'foreground');
   },
-  'cursorImage' : function (event, template) {
-    return template.mode.get() == 'background' ? '/background-cursor.png':'/foreground-cursor.png';
-  },
-  'drag' : function (event, template) {
+  'drag .photograb-input, drag .photograb-output' : function (event, template) {
     markUpdated.set(new Date());
-    currentMark.get().path.push([event.x, event.y]);
+    var off = $(event.currentTarget).offset();
+    currentMark.get().path.push([event.x-off.left, event.y-off.top]);
   },
   'drop' : function (event, template) {
     Meteor.call('addMark', currentMark.get());
     markUpdated.set(new Date());
     currentMark.set();
+  },
+  'doubletap' : function () {
+    Meteor.call('updateForeground');
   }
 });
 
@@ -78,7 +83,11 @@ Template.photograb.helpers({
   },
   control_diameter : function (control) {
     return Template.instance()[control + '_radius'].get()*2;
-  }
+  },
+  cursorImage : function () {
+    return Template.instance().mode.get() == 'background' ? '/background-cursor.png':'/foreground-cursor.png';
+  },
+
 });
 
 Template.mask.helpers({
@@ -129,6 +138,7 @@ Template.mark.helpers({
 Template.mark.events({
   tap : function (event, template) {
     Meteor.call('removeMark', this._id);
+    event.stopPropagation();
   },
  
 });

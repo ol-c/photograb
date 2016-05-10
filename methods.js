@@ -16,12 +16,6 @@ console.log('grabcut.')
       }
       else {
         Masks.remove({});
-        JSON.parse(stdout).forEach(function (perimeter) {
-          Masks.insert({
-            type:"foreground",
-            path:perimeter
-          });
-        });
       }
     });
   }

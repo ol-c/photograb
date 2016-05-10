@@ -48,16 +48,20 @@ for mark in info['marks']:
 bgdModel = np.zeros((1,65),np.float64)
 fgdModel = np.zeros((1,65),np.float64)
 
-mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,2,cv2.GC_INIT_WITH_MASK)
+mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_MASK)
+
+# create the alpha channel
+mask = np.where((mask==2)|(mask==0),0,1).astype('uint8');
+img_a = np.where((mask==0),0,255).astype('uint8')
+img_a = cv2.blur(img_a, (3,3))
+
+#  clamp transparent values
+img_a = np.where((img_a<64),0,img_a).astype('uint8')
+img_a = np.where((img_a>127),255,img_a).astype('uint8')
 
 
-mask2 = np.where((mask==2)|(mask==0),0,255).astype('uint8')
+img_b, img_g, img_r = cv2.split(img);
+img_rgba = cv2.merge((img_b*mask, img_g*mask, img_r*mask, img_a))
 
-#img = img*mask2[:,:,np.newaxis]
-
-#cv2.imwrite(info['path']+'-mask.png', mask2)
-
-im2, contours, hierarchy = cv2.findContours(mask2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-
-
-print json.dumps([[point[0].tolist() for point in contour] for contour in contours])
+cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
+cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);

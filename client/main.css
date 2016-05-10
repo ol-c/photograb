@@ -2,19 +2,26 @@ body
 {
   margin : 0;
   user-select : none;
+  -webkit-user-select: none; /* Chrome/Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
 }
 
-.photograb
+.photograb-input,
+.photograb-output
 {
   position : relative;
+  width : 100%;
 }
 
-.photograb img
+.photograb-input img,
+.photograb-output img
 {
   display : block;
 }
 
-.photograb svg
+.photograb-input svg,
+.photograb-output svg
 {
   display : block;
   position : absolute;
@@ -22,37 +29,17 @@ body
   left : 0;
 }
 
+.input-mask
+{
+  opacity : 0.5;
+  position : absolute;
+  top : 0;
+  left : 0;
+}
+
+.output-overlay,
 .mask
 {
   pointer-events : none;
 }
 
-.photograb-controls
-{
-  position : fixed;
-  display : flex;
-  align-items : center;
-  top : 0;
-  right : 0;
-}
-
-.photograb-probable-foreground
-{
-  display : inline-block;
-  background : rgba(0,255,0,0.5);
-  margin : 1em;
-}
-
-.photograb-foreground
-{
-  margin : 1em;
-  display : inline-block;
-  background : rgba(0,255,0,0.75);
-}
-
-.photograb-background
-{
-  margin : 1em;
-  display : inline-block;
-  background : rgba(255,0,0,0.5);
-}

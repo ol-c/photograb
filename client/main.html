@@ -8,11 +8,18 @@
 </body>
 
 <template name="photograb">
-  <div class="photograb" style="cursor:url({{cursorImage}});">
+  <div class="photograb-input">
     <img src="{{imageSrc}}">
-    <svg width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
-      {{#each marks}}{{> mark}}{{/each}}
+    <img class="input-mask" src="{{imageGrabcutMaskSrc}}">
+    <svg class="input-overlay" style="cursor:url({{cursorImage}}) 8 8, pointer;" width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
       {{#each masks}}{{> mask}}{{/each}}
+      {{#each marks}}{{> mark}}{{/each}}
+      {{#if currentMark}}{{> mark currentMark }}{{/if}}
+    </svg>
+  </div>
+  <div class="photograb-output">
+    <img style="cursor:url({{cursorImage}}) 8 8, pointer;" src="{{imageGrabcutSrc}}">
+    <svg class="output-overlay" style="cursor:url({{cursorImage}}) 8 8, pointer;" width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
       {{#if currentMark}}{{> mark currentMark }}{{/if}}
     </svg>
   </div>
