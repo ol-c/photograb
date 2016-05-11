@@ -5,6 +5,13 @@ import json
 import os
 import base64
 
+
+typeToGC_MASK = {
+  'probable_foreground' : cv2.GC_PR_FGD,
+  'foreground' : cv2.GC_FGD,
+  'background' : cv2.GC_BGD
+}
+
 # returns iterable of (a,b) pairs
 # where a is current element and b is the next in the given iterable
 def pairwise(iterable):
@@ -24,17 +31,13 @@ if not os.path.exists(info['path']):
 
 img = cv2.imread(info['path'])
 
+scale = info['scale']
 
-mask = np.empty(img.shape[:2],np.uint8)
+# create empty mask and scale it for image dimensions
+mask = np.empty((int(img.shape[0]/scale),int(img.shape[1]/scale)),np.uint8)
+
 # fill with background
 mask.fill(cv2.GC_PR_BGD)
-
-
-typeToGC_MASK = {
-  'probable_foreground' : cv2.GC_PR_FGD,
-  'foreground' : cv2.GC_FGD,
-  'background' : cv2.GC_BGD
-}
 
 # fill parts appropriately
 for mark in info['marks']:
@@ -44,7 +47,8 @@ for mark in info['marks']:
     typeToGC_MASK[mark['type']],
     thickness=mark['radius']*2)
 
-
+# resize the mask to fit compressed image dimensions
+mask = cv2.resize(mask, (img.shape[1], img.shape[0]), interpolation=cv2.INTER_NEAREST)
 
 bgdModel = np.zeros((1,65),np.float64)
 fgdModel = np.zeros((1,65),np.float64)
@@ -52,13 +56,12 @@ fgdModel = np.zeros((1,65),np.float64)
 mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_MASK)
 
 # create the alpha channel
-mask = np.where((mask==2)|(mask==0),0,1).astype('uint8');
-img_a = np.where((mask==0),0,255).astype('uint8')
+img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
 
-img_a = cv2.blur(img_a, (3,3))
-#  clamp transparent values
-img_a = np.where((img_a<128),0,img_a).astype('uint8')
-#img_a = np.where((img_a>220),255,img_a).astype('uint8')
+#img_a_blur = cv2.GaussianBlur(img_a, (3,3),3)
+#img_a_blur = cv2.medianBlur(img_a_blur, 11)
+#img_a_edge = cv2.Canny(img_a, 0,254)
+#img_a = np.where((img_a>0)&(img_a_edge==0),img_a,img_a_blur)
 
 ##### not writing actual image
 #img_b, img_g, img_r = cv2.split(img);
@@ -70,7 +73,7 @@ mask_rgba = cv2.merge((img_a, img_a, img_a, img_a))
 #cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
 #cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
 
-# write the transparency image
+# write the transparency image (resize for smooth masking)
 cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
 
 

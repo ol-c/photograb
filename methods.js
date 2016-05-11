@@ -10,6 +10,7 @@ Meteor.methods({
     var id =  Photograbs.insert({
       width : 0,
       height : 0,
+      scale : 1,
       mode : 'foreground'
     });
     return id;
@@ -19,6 +20,9 @@ Meteor.methods({
   },
   photograbDimensions : function (photograbId, width, height) {
     Photograbs.update(photograbId, {$set:{width:width,height:height}});
+  },
+  photograbScale : function (photograbId, scale) {
+    Photograbs.update(photograbId, {$set:{scale:scale}});
   },
   photograbImage : function (photograbId, image) {
     if (Meteor.isServer) {
@@ -42,12 +46,13 @@ Meteor.methods({
       var marks = Marks.find({photograb:photograbId}).fetch();
       var input = {
         marks : marks,
+        scale : photograb.scale,
         path : '/home/jason/tmp/' + photograbId
       };
       //  prevent max buffer exceeded error
       console.log('grabcutting...');
       grabcut(input, function (err, stdout, stderr) {
-        if (err) {console.log(err);}
+        if (err) {console.log(stdout);console.log(err);}
         else {
           console.log('grabcut.');
           //  set marks used as applied

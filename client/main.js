@@ -60,9 +60,24 @@ Template.photograb.events({
     var files = event.target.files;
     var reader = new FileReader();
     reader.onload = function(frEvent) {
-      template.imageData.set(frEvent.target.result);
-      // TODO: maybe send smaller image to process
-      Meteor.call('photograbImage', template.data._id, frEvent.target.result);
+      var imageData = frEvent.target.result;
+      template.imageData.set(imageData);
+      // send smaller image to process
+      var image = new Image();
+      image.onload = function () {
+        var canvas = document.createElement('canvas');
+        console.log(image.src.length);
+        var context = canvas.getContext('2d');
+        var scale = Math.min(1, Math.min(256/image.height, 256/image.width));
+        canvas.width = image.width*scale;
+        canvas.height = image.height*scale;
+        Meteor.call('photograbScale', template.data._id, scale);
+        context.drawImage(image,0,0, canvas.width, canvas.height);
+        var compressedImageData = canvas.toDataURL('image/jpeg');
+        console.log(compressedImageData.length)
+        Meteor.call('photograbImage', template.data._id, compressedImageData);
+      }
+      image.src = imageData;
     }
     reader.readAsDataURL(files[0]);
   },

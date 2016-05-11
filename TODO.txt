@@ -6,8 +6,8 @@ X canvas masking on transparency
 X side-by-side input and output
 X visual feedback for grabcutting in progress (show unresolved marks on output)
 
-
-size viewed images to screen
+resize picture sent to server
+size viewed images to container
 reliable zoom sizing
-only send small image version
+save cutout to server
 show instructions
