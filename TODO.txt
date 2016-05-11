@@ -1,7 +1,9 @@
 X view extracted (can download/save natively)
 X remove internal segments
 X transparency mask for better edge rendering
-reliable zoom sizing
-visual feedback for grabcutting in progress (show unresolved marks on output?)
+upload image
+canvas masking on transparency
 side-by-side input and output
+visual feedback for grabcutting in progress (show unresolved marks on output?)
+reliable zoom sizing
 show instructions

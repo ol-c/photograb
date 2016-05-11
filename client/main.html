@@ -4,34 +4,42 @@
 </head>
 
 <body>
-  {{> photograb}}
+  {{#if currentPhotograb}}
+    {{> photograb currentPhotograb}}
+  {{/if}}
 </body>
 
 <template name="photograb">
-  <div class="photograb-input">
-    <img src="{{imageSrc}}">
-    <img class="input-mask" src="{{imageGrabcutMaskSrc}}">
-    <svg class="input-overlay" style="cursor:url({{cursorImage}}) 8 8, pointer;" width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
-      {{#each masks}}{{> mask}}{{/each}}
-      {{#each marks}}{{> mark}}{{/each}}
-      {{#if currentMark}}{{> mark currentMark }}{{/if}}
-    </svg>
+  <div class="photograb">
+    <div class="photograb-input">
+      <img class="photograb-original"
+           src="{{imageData}}">
+      <!--<img class="photograb-mask"
+           src="{{maskSrc}}">-->
+      <svg class="input-overlay"
+           width="{{width}}"
+           height="{{height}}"
+           viewbox="0 0 {{width}} {{height}}">
+        {{#each marks}}{{> mark}}{{/each}}
+        {{#if currentMark}}{{> mark currentMark }}{{/if}}
+      </svg>
+      <div class="photograb-input-controls">
+        <input type="file">
+      </div>
+    </div>
+    <div class="photograb-output">
+      <canvas class="photograb-output-canvas"
+              width="{{width}}"
+              height="{{height}}">
+      </canvas>
+      <svg class="output-overlay"
+           width="{{width}}"
+           height="{{height}}"
+           viewbox="0 0 {{width}} {{height}}">
+        {{#if currentMark}}{{> mark currentMark }}{{/if}}
+      </svg>
+    </div>
   </div>
-  <div class="photograb-output">
-    <img style="cursor:url({{cursorImage}}) 8 8, pointer;" src="{{imageGrabcutSrc}}">
-    <svg class="output-overlay" style="cursor:url({{cursorImage}}) 8 8, pointer;" width="{{width}}" height="{{height}}" viewbox="0 0 {{width}} {{height}}">
-      {{#if currentMark}}{{> mark currentMark }}{{/if}}
-    </svg>
-  </div>
-</template>
-
-<template name="mask">
-  <path class="mask"
-        d="{{path}}"
-        stroke="{{stroke}}"
-        fill="{{fill}}"
-        stroke-width="{{strokeWidth}}"/>
-
 </template>
 
 <template name="mark">

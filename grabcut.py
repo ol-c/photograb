@@ -3,6 +3,7 @@ import cv2
 import sys
 import json
 import os
+import base64
 
 # returns iterable of (a,b) pairs
 # where a is current element and b is the next in the given iterable
@@ -53,15 +54,31 @@ mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_
 # create the alpha channel
 mask = np.where((mask==2)|(mask==0),0,1).astype('uint8');
 img_a = np.where((mask==0),0,255).astype('uint8')
-img_a = cv2.blur(img_a, (3,3))
 
+##### disregarding blur...
+#img_a = cv2.blur(img_a, (3,3))
 #  clamp transparent values
-img_a = np.where((img_a<64),0,img_a).astype('uint8')
-img_a = np.where((img_a>127),255,img_a).astype('uint8')
+#img_a = np.where((img_a<64),0,img_a).astype('uint8')
+#img_a = np.where((img_a>127),255,img_a).astype('uint8')
+
+##### not writing actual image
+#img_b, img_g, img_r = cv2.split(img);
+#img_rgba = cv2.merge((img_b*mask, img_g*mask, img_r*mask, img_a))
+
+##  get image with transparency
+mask_rgba = cv2.merge((img_a, img_a, img_a, img_a))
+
+#cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
+#cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
+
+# write the transparency image
+cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
 
 
-img_b, img_g, img_r = cv2.split(img);
-img_rgba = cv2.merge((img_b*mask, img_g*mask, img_r*mask, img_a))
+print base64.b64encode(open(info['path'] + '-grabcut-mask.png', "rb").read())
 
-cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
-cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
+
+
+
+
+
