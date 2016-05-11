@@ -11,11 +11,14 @@
 
 <template name="photograb">
   <div class="photograb">
+    <div class="photograb-input-controls">
+      <input type="file">
+    </div>
     <div class="photograb-input">
       <img class="photograb-original"
            src="{{imageData}}">
-      <!--<img class="photograb-mask"
-           src="{{maskSrc}}">-->
+      <img class="photograb-original-mask"
+           src="{{maskData}}">
       <svg class="input-overlay"
            width="{{width}}"
            height="{{height}}"
@@ -23,19 +26,17 @@
         {{#each marks}}{{> mark}}{{/each}}
         {{#if currentMark}}{{> mark currentMark }}{{/if}}
       </svg>
-      <div class="photograb-input-controls">
-        <input type="file">
-      </div>
-    </div>
+   </div>
     <div class="photograb-output">
-      <canvas class="photograb-output-canvas"
-              width="{{width}}"
-              height="{{height}}">
-      </canvas>
+      <img class="photograb-output"
+           src="{{imageData}}"
+           style="mask-image:url({{maskData}});
+                  -webkit-mask-image:url({{maskData}});">
       <svg class="output-overlay"
            width="{{width}}"
            height="{{height}}"
            viewbox="0 0 {{width}} {{height}}">
+        {{#each unappliedMarks}}{{> mark}}{{/each}}
         {{#if currentMark}}{{> mark currentMark }}{{/if}}
       </svg>
     </div>

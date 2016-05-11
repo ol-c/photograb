@@ -55,11 +55,10 @@ mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_
 mask = np.where((mask==2)|(mask==0),0,1).astype('uint8');
 img_a = np.where((mask==0),0,255).astype('uint8')
 
-##### disregarding blur...
-#img_a = cv2.blur(img_a, (3,3))
+img_a = cv2.blur(img_a, (3,3))
 #  clamp transparent values
-#img_a = np.where((img_a<64),0,img_a).astype('uint8')
-#img_a = np.where((img_a>127),255,img_a).astype('uint8')
+img_a = np.where((img_a<128),0,img_a).astype('uint8')
+#img_a = np.where((img_a>220),255,img_a).astype('uint8')
 
 ##### not writing actual image
 #img_b, img_g, img_r = cv2.split(img);

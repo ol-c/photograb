@@ -27,35 +27,7 @@ Template.photograb.onCreated(function () {
   this.markUpdated = new ReactiveVar();
   this.currentMark = new ReactiveVar();
   this.imageData   = new ReactiveVar();
-});
-
-Template.photograb.onRendered(function () {
-  var template = this;
-  template.canvas = template.$('canvas')[0];
-
-  Photograbs.find(template.data._id).observeChanges({
-    changed : function (id, fields) {
-      //  if the mask has updated, show it
-      if (fields.mask) {
-        //  update the canvas
-        var context = template.canvas.getContext('2d');
-        var image = new Image();
-        context.clearRect(0, 0, template.canvas.width, template.canvas.height);
-        image.onload = function () {
-          var image2 = new Image();
-          image2.onload = function () {
-            var reset = context.globalCompositeOperation;
-            context.drawImage(image, 0, 0);
-            context.globalCompositeOperation = 'source-in';
-            context.drawImage(image2, 0, 0);
-            context.globalCompositeOperation = reset;
-          }
-          image2.src = template.imageData.get();
-        }
-        image.src = fields.mask;
-      }
-    }
-  });
+  this.outputData  = new ReactiveVar();
 });
 
 Template.photograb.helpers({
@@ -66,12 +38,20 @@ Template.photograb.helpers({
   imageData : function () {
     return Template.instance().imageData.get();
   },
+  outputData : function () {
+    return Template.instance().outputData.get();
+  },
   maskData : function () {
-    console.log(this.mask);
     return this.mask;
   },
   marks : function ()  {
     return Marks.find({photograb:this._id});
+  },
+  unappliedMarks : function () {
+    return Marks.find({
+      photograb : this._id,
+      applied   : false
+    });
   }
 });
 

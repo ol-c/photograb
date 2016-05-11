@@ -39,8 +39,9 @@ Meteor.methods({
   updateMask : function (photograbId) {
     if (Meteor.isServer) {
       var photograb = Photograbs.findOne(photograbId);
+      var marks = Marks.find({photograb:photograbId}).fetch();
       var input = {
-        marks : Marks.find({photograb:photograbId}).fetch(),
+        marks : marks,
         path : '/home/jason/tmp/' + photograbId
       };
       //  prevent max buffer exceeded error
@@ -49,7 +50,10 @@ Meteor.methods({
         if (err) {console.log(err);}
         else {
           console.log('grabcut.');
-          //  TODO: set marks used as applied
+          //  set marks used as applied
+          marks.forEach(function (mark) {
+            Marks.update(mark._id, {$set : {applied : true}});
+          });
           //  set photograb mask
           Photograbs.update(photograbId, {$set:{mask:'data:image/png;base64,'+stdout}});
         }

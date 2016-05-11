@@ -1,9 +1,13 @@
 X view extracted (can download/save natively)
 X remove internal segments
 X transparency mask for better edge rendering
-upload image
-canvas masking on transparency
-side-by-side input and output
-visual feedback for grabcutting in progress (show unresolved marks on output?)
+X upload image
+X canvas masking on transparency
+X side-by-side input and output
+X visual feedback for grabcutting in progress (show unresolved marks on output)
+
+
+size viewed images to screen
 reliable zoom sizing
+only send small image version
 show instructions
