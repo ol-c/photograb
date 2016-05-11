@@ -102,8 +102,6 @@ Template.photograb.events({
     Meteor.call('addMark', this._id, template.currentMark.get());
     template.markUpdated.set(new Date());
     template.currentMark.set();
-  },
-  'doubletap' : function () {
     Meteor.call('updateMask', this._id);
   }
 });
