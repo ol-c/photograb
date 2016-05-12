@@ -35,16 +35,6 @@ Template.photograb.onCreated(function () {
   this.scale = new ReactiveVar(1);
   this.scaledWidth = new ReactiveVar(0);
   this.scaledHeight = new ReactiveVar(0);
-
-  //  update mask any time a mark is updated
-
-  function updateMask() {
-  }
-
-  Marks.find({photograb:template.data._id}).observeChanges({
-    added   : updateMask,
-    removed : updateMask
-  });
 });
 
 Template.photograb.onRendered(function () {
@@ -81,6 +71,20 @@ Template.photograb.helpers({
   },
   outputData : function () {
     return Template.instance().outputData.get();
+  },
+  maskPath : function () {
+    var combinedPath = '';
+    if (!this.mask) return;
+    var pathStringGenerator = d3.svg.line().interpolate('monotone');
+    this.mask.forEach(function (path) {
+      //  end on the first
+      path.push(path[0]);
+      var pathPart = pathStringGenerator(path);
+      console.log(pathPart);
+      combinedPath += pathPart;
+    });
+    combinedPath += 'Z';
+    return combinedPath;
   },
   maskData : function () {
     return this.mask;
@@ -152,7 +156,6 @@ Template.photograb.events({
     Meteor.call('addMark', this._id, template.currentMark.get());
     template.markUpdated.set(new Date());
     template.currentMark.set();
-    Meteor.call('updateMask', this._id);
   }
 });
 

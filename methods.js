@@ -36,9 +36,12 @@ Meteor.methods({
   addMark : function (photograbId, mark) {
     mark.photograb = photograbId,
     Marks.insert(mark);
+    Meteor.call('updateMask', photograbId);
   },
   removeMark : function (id) {
+    var photograbId = Marks.findOne(id).photograb;
     Marks.remove(id);
+    Meteor.call('updateMask', photograbId);
   },
   updateMask : function (photograbId) {
     if (Meteor.isServer) {
@@ -60,7 +63,7 @@ Meteor.methods({
             Marks.update(mark._id, {$set : {applied : true}});
           });
           //  set photograb mask
-          Photograbs.update(photograbId, {$set:{mask:'data:image/png;base64,'+stdout}});
+          Photograbs.update(photograbId, {$set:{mask:JSON.parse(stdout)}});
         }
       });
     }

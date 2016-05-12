@@ -63,7 +63,8 @@ body
   left : 0;
 }
 
-.output-overlay
+.output-overlay,
+.mask
 {
   pointer-events : none;
 }

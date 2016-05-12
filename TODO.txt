@@ -11,6 +11,8 @@ X auto update grabcuts
 X size viewed images to container
 X reliable zoom marker sizing
 X smooth user zooming
-svg masks
+X svg masks
+
+smooth svg masks
 
 show instructions

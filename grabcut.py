@@ -57,7 +57,12 @@ mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_
 
 # create the alpha channel
 img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
-#img_a, contours, heirarchy = cv2.findContours(img_a,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+# find contours
+img_a, contours, heirarchy = cv2.findContours(img_a,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+#scale contours and flatten array since points are [[point]]
+contours = [[tuple(point[0]) for point in contour/scale] for contour in contours]
 
 #img_a_blur = cv2.GaussianBlur(img_a, (3,3),3)
 #img_a_blur = cv2.medianBlur(img_a_blur, 11)
@@ -67,21 +72,18 @@ img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
 ##### not writing actual image
 #img_b, img_g, img_r = cv2.split(img);
 #img_rgba = cv2.merge((img_b*mask, img_g*mask, img_r*mask, img_a))
-
-##  get image with transparency
-mask_rgba = cv2.merge((img_a, img_a, img_a, img_a))
-
+#### write the transparency image (resize for smooth masking)
 #cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
 #cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
+# cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
 
-# write the transparency image (resize for smooth masking)
-cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
-
-
-print base64.b64encode(open(info['path'] + '-grabcut-mask.png', "rb").read())
-
-
-
-
+##########################################
+# to return base64 version of image mask
+#  get image with transparency channel
+#mask_rgba = cv2.merge((img_a, img_a, img_a, img_a))
+#print base64.b64encode(open(info['path'] + '-grabcut-mask.png', "rb").read())
+##########################################
 
 
+# to return JSON of contour information
+print json.dumps(contours)
