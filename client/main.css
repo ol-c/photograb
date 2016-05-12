@@ -6,27 +6,46 @@ body
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+ */
   top : 0;
-  bottom : 0;
   left : 0;
+  bottom : 0;
   right : 0;
   position : absolute;
+  overflow : hidden;
+}
+
+
+.photograb
+{
+  position : relative;
+  width : 100%;
+  height : 100%;  
+}
+
+.photograb-inner {
+  position : absolute;
+  white-space : nowrap; /* force input and output
+                           next to eachother */
+  top : 0;
+  left : 0; 
 }
 
 .photograb-input,
 .photograb-output
 {
-  position : relative;
+  top : 0;
   display : inline-block;
+  position : relative;
 }
 
-.photograb-input img,
-.photograb-output canvas
+.photograb-original,
+.photograb-result
 {
   display : block;
 }
 
 .photograb-input svg,
-.photograb-output svg
+.photograb-output svg,
+.photograb-original-mask
 {
   display : block;
   position : absolute;
@@ -36,15 +55,12 @@ body
   height : 100%;
 }
 
-.photograb-original-mask,
-.photograb-output-mask
+.photograb-original-mask
 {
   opacity : 0.5;
   position : absolute;
   top : 0;
   left : 0;
-  width : 100%;
-  height : 100%;
 }
 
 .output-overlay
@@ -57,6 +73,7 @@ body
   position : absolute;
   top : 0;
   left : 0;
+  z-index : 1;
 }
 
 .photograb-output-controls

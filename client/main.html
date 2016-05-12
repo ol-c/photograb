@@ -14,31 +14,39 @@
     <div class="photograb-input-controls">
       <input type="file">
     </div>
-    <div class="photograb-input">
-      <img class="photograb-original"
-           src="{{imageData}}">
-      <img class="photograb-original-mask"
-           src="{{maskData}}">
-      <svg class="input-overlay"
-           width="{{width}}"
-           height="{{height}}"
-           viewbox="0 0 {{width}} {{height}}">
-        {{#each marks}}{{> mark}}{{/each}}
-        {{#if currentMark}}{{> mark currentMark }}{{/if}}
-      </svg>
-   </div>
-    <div class="photograb-output">
-      <img class="photograb-output"
-           src="{{imageData}}"
-           style="mask-image:url({{maskData}});
-                  -webkit-mask-box-image:url({{maskData}});">
-      <svg class="output-overlay"
-           width="{{width}}"
-           height="{{height}}"
-           viewbox="0 0 {{width}} {{height}}">
-        {{#each unappliedMarks}}{{> mark}}{{/each}}
-        {{#if currentMark}}{{> mark currentMark }}{{/if}}
-      </svg>
+    <div class="photograb-inner"
+         style="left:{{x}}px;
+                top:{{y}}px;
+                transform-origin:0 0;
+                -webkit-transform-origin:0 0;
+                transform:scale({{scale}});
+                -webkit-transform:scale({{scale}});">
+      <div class="photograb-input">
+        <img class="photograb-original"
+             src="{{imageData}}">
+        <img class="photograb-original-mask"
+             src="{{maskData}}">
+        <svg class="input-overlay"
+             width="{{width}}"
+             height="{{height}}"
+             viewbox="0 0 {{width}} {{height}}">
+          {{#each marks}}{{> mark}}{{/each}}
+          {{#if currentMark}}{{> mark currentMark }}{{/if}}
+        </svg>
+      </div>
+      <div class="photograb-output">
+        <img class="photograb-result"
+             src="{{imageData}}"
+             style="mask-image:url({{maskData}});
+                    -webkit-mask-box-image:url({{maskData}});">
+        <svg class="output-overlay"
+             width="{{width}}"
+             height="{{height}}"
+             viewbox="0 0 {{width}} {{height}}">
+          {{#each unappliedMarks}}{{> mark}}{{/each}}
+          {{#if currentMark}}{{> mark currentMark }}{{/if}}
+        </svg>
+      </div>
     </div>
   </div>
 </template>

@@ -57,6 +57,7 @@ mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_
 
 # create the alpha channel
 img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
+#img_a, contours, heirarchy = cv2.findContours(img_a,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 #img_a_blur = cv2.GaussianBlur(img_a, (3,3),3)
 #img_a_blur = cv2.medianBlur(img_a_blur, 11)

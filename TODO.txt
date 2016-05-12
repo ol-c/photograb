@@ -8,7 +8,9 @@ X visual feedback for grabcutting in progress (show unresolved marks on output)
 
 X resize picture sent to server
 X auto update grabcuts
-size viewed images to container
-reliable zoom sizing
-save cutout to server
+X size viewed images to container
+X reliable zoom marker sizing
+X smooth user zooming
+svg masks
+
 show instructions
