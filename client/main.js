@@ -75,12 +75,11 @@ Template.photograb.helpers({
   maskPath : function () {
     var combinedPath = '';
     if (!this.mask) return;
-    var pathStringGenerator = d3.svg.line().interpolate('monotone');
+    var pathStringGenerator = d3.svg.line().interpolate('linear');
     this.mask.forEach(function (path) {
       //  end on the first
       path.push(path[0]);
       var pathPart = pathStringGenerator(path);
-      console.log(pathPart);
       combinedPath += pathPart;
     });
     combinedPath += 'Z';
@@ -132,7 +131,7 @@ Template.photograb.events({
   },
   'touch' : function (event, template) {
     template.markUpdated.set(new Date());
-    template.currentMark.set(newMark(this.mode,Math.round(5/template.scale.get())));
+    template.currentMark.set(newMark(template.data.mode,Math.round(5/template.scale.get())));
   },
   'pinch' : function (event, template) {
     var off = $(template.firstNode).offset();
@@ -153,7 +152,8 @@ Template.photograb.events({
     template.currentMark.get().path.push([x,y]);
   },
   'drop' : function (event, template) {
-    Meteor.call('addMark', this._id, template.currentMark.get());
+    console.log(template.currentMark.get())
+    Meteor.call('addMark', template.data._id, template.currentMark.get());
     template.markUpdated.set(new Date());
     template.currentMark.set();
   }
@@ -184,7 +184,7 @@ Template.mark.helpers({
 
 Template.mark.events({
   tap : function (event, template) {
-    Meteor.call('removeMark', this._id);
+    Meteor.call('removeMark', template.data._id);
     event.stopPropagation();
   }
 });
