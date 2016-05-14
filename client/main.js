@@ -76,7 +76,7 @@ Template.photograb.helpers({
   maskPath : function () {
     var combinedPath = '';
     if (!this.mask) return;
-    var pathStringGenerator = d3.svg.line().interpolate('linear');
+    var pathStringGenerator = d3.svg.line().interpolate('monotone');
     var data = this;
     this.mask.forEach(function (path) {
       //  end on the first
@@ -94,7 +94,7 @@ Template.photograb.helpers({
   },
   maskAttributes : function () {
     return {
-      'stroke-width' : 5/Template.instance().scale.get(),
+      'stroke-width' : 2/Template.instance().scale.get(),
       'stroke' : 'yellow',
       'fill' : "rgba(255,255,255,0.5)"
     }

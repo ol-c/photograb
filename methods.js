@@ -2,7 +2,7 @@ function grabcut(input, callback) {
   var child_process = Npm.require('child_process');
   var exec = Meteor.wrapAsync(child_process.exec);
   var options = {maxBuffer: 1024 * 10000};
-  exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
+  return exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
 }
 
 Meteor.methods({
@@ -46,6 +46,14 @@ Meteor.methods({
   updateMask : function (photograbId) {
     if (Meteor.isServer) {
       var photograb = Photograbs.findOne(photograbId);
+      if (photograb.grabcutPID) {
+        try {
+          process.kill(photograb.grabcutPID, 'SIGKILL');
+        }
+        catch (error) {
+          //  in case process exited at odd time/between updates
+        }
+      }
       var marks = Marks.find({photograb:photograbId}).fetch();
       var input = {
         marks : marks,
@@ -54,8 +62,12 @@ Meteor.methods({
       };
       //  prevent max buffer exceeded error
       console.log('grabcutting...');
-      grabcut(input, function (err, stdout, stderr) {
-        if (err) {console.log(stdout);console.log(err);}
+      var child_process = grabcut(input, function (err, stdout, stderr) {
+        Photograbs.update({grabcutId : child_process}, {$set : {grabcutPID : null}})
+        if (err) {
+          // might be terminated if another grabcut was requested
+          console.log(err);
+        }
         else {
           console.log('grabcut.');
           //  set marks used as applied
@@ -66,6 +78,7 @@ Meteor.methods({
           Photograbs.update(photograbId, {$set:{mask:JSON.parse(stdout)}});
         }
       });
+      Photograbs.update(photograbId, {$set : {grabcutPID : child_process.pid}});
     }
   }
 });

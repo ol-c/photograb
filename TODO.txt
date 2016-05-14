@@ -12,8 +12,10 @@ X size viewed images to container
 X reliable zoom marker sizing
 X smooth user zooming
 X svg masks
+X scale svg path to stay constant on screen with zoom
 
-scale svg path to stay constant on screen with zoom
-smooth svg masks
+kill running grabcut if new one requested
+smooth svg masks (collapse points and simlify path)
+render image masked with svg
 
 show instructions
