@@ -35,6 +35,7 @@ Template.photograb.onCreated(function () {
   this.scale = new ReactiveVar(1);
   this.scaledWidth = new ReactiveVar(0);
   this.scaledHeight = new ReactiveVar(0);
+  this.maxMaskDimension = new ReactiveVar(1024);
 });
 
 Template.photograb.onRendered(function () {
@@ -76,17 +77,27 @@ Template.photograb.helpers({
     var combinedPath = '';
     if (!this.mask) return;
     var pathStringGenerator = d3.svg.line().interpolate('linear');
+    var data = this;
     this.mask.forEach(function (path) {
       //  end on the first
       path.push(path[0]);
-      var pathPart = pathStringGenerator(path);
-      combinedPath += pathPart;
+      //  smooth the path
+      console.log('===')
+      console.log(path.length)
+      //  resolution should be 2 pixels of compressed image sent to server
+      //path = simplify(path, resolution, true);
+      console.log(path.length);
+      combinedPath += pathStringGenerator(path);
     });
     combinedPath += 'Z';
     return combinedPath;
   },
-  maskData : function () {
-    return this.mask;
+  maskAttributes : function () {
+    return {
+      'stroke-width' : 5/Template.instance().scale.get(),
+      'stroke' : 'yellow',
+      'fill' : "rgba(255,255,255,0.5)"
+    }
   },
   marks : function ()  {
     return Marks.find({photograb:this._id});
@@ -111,7 +122,7 @@ Template.photograb.events({
       image.onload = function () {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        var scale = Math.min(1, Math.min(256/image.height, 256/image.width));
+        var scale = Math.min(1, Math.min(template.maxMaskDimension.get()/image.height, template.maxMaskDimension.get()/image.width));
         canvas.width = image.width*scale;
         canvas.height = image.height*scale;
         Meteor.call('photograbScale', template.data._id, scale);

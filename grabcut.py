@@ -62,7 +62,8 @@ img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
 img_a, contours, heirarchy = cv2.findContours(img_a,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 #scale contours and flatten array since points are [[point]]
-contours = [[tuple(point[0]) for point in contour/scale] for contour in contours]
+# add .5 to be in center of edge pixel
+contours = [[tuple(point[0]+0.5) for point in contour/scale] for contour in contours]
 
 #img_a_blur = cv2.GaussianBlur(img_a, (3,3),3)
 #img_a_blur = cv2.medianBlur(img_a_blur, 11)

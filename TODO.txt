@@ -13,6 +13,7 @@ X reliable zoom marker sizing
 X smooth user zooming
 X svg masks
 
+scale svg path to stay constant on screen with zoom
 smooth svg masks
 
 show instructions
