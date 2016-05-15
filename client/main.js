@@ -112,7 +112,14 @@ Template.photograb.helpers({
       photograb : this._id,
       applied   : false
     });
+  },
+  appliedMarks : function () {
+    return Marks.find({
+      photograb : this._id,
+      applied   : true
+    });
   }
+
 });
 
 Template.photograb.events({
@@ -141,13 +148,21 @@ Template.photograb.events({
     }
     reader.readAsDataURL(files[0]);
   },
-  'mousedown, touchstart' : function (event, template) {event.preventDefault();},
+  'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {
     Meteor.call('photograbDimensions', this._id, event.target.width, event.target.height);
   },
   'touch' : function (event, template) {
-    template.markUpdated.set(new Date());
-    template.currentMark.set(newMark(template.data.mode,Math.round(5/template.scale.get())));
+    if (event.fingers == 1) {
+      template.markUpdated.set(new Date());
+      var newCurrent = newMark(template.data.mode,Math.round(5/template.scale.get()))
+      newCurrent.current = true;
+      template.currentMark.set(newCurrent);
+    }
+    else {
+      template.markUpdated.set(new Date());
+      template.currentMark.set();
+    }
   },
   'pinch' : function (event, template) {
     var off = $(template.firstNode).offset();
@@ -161,17 +176,27 @@ Template.photograb.events({
     Meteor.call('photograbMode', this._id, this.mode == 'foreground' ? 'background':'foreground');
   },
   'drag .photograb-input, drag .photograb-output' : function (event, template) {
-    template.markUpdated.set(new Date());
-    var off = $(event.currentTarget).offset();
-    var x = (event.x-off.left)/template.scale.get();
-    var y = (event.y-off.top)/template.scale.get();
-    template.currentMark.get().path.push([x,y]);
+    //  drag mark if current mark, else drag view
+    if (template.currentMark.get()) {
+      template.markUpdated.set(new Date());
+      var off = $(event.currentTarget).offset();
+      var x = (event.x-off.left)/template.scale.get();
+      var y = (event.y-off.top)/template.scale.get();
+      template.currentMark.get().path.push([x,y]);
+    }
+    else {
+      template.x.set(template.x.get() + event.dx);
+      template.y.set(template.y.get() + event.dy);
+    }
   },
   'drop' : function (event, template) {
-    console.log(template.currentMark.get())
-    Meteor.call('addMark', template.data._id, template.currentMark.get());
-    template.markUpdated.set(new Date());
-    template.currentMark.set();
+    if (template.currentMark.get()) {
+      var current = template.currentMark.get();
+      delete current.current;
+      Meteor.call('addMark', template.data._id, current);
+      template.markUpdated.set(new Date());
+      template.currentMark.set();
+    }
   }
 });
 
@@ -195,6 +220,9 @@ Template.mark.helpers({
       });
       return path;
     }
+  },
+  waitingForApplication : function () {
+    return !this.applied && !this.current;
   }
 });
 

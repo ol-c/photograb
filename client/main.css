@@ -83,3 +83,27 @@ body
   top : 0;
   right : 0;
 }
+
+@keyframes fadeOut
+{
+  0%
+  {
+    opacity : 1;
+  }
+  100%
+  {
+    opacity : 0.25;
+  } 
+}
+
+.photograb-waiting
+{
+  animation-name: fadeOut;
+  animation-duration: .75s; 
+  animation-timing-function: ease-out; 
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-fill-mode: none;
+  animation-play-state: running; 
+}

@@ -16,8 +16,18 @@ X scale svg path to stay constant on screen with zoom
 X kill running grabcut if new one requested
 X smooth svg masks (collapse points and simlify path)
 
-snap to nearest pixel for mask
+X pulse rendering marks
+X mobile ready:
+X  y position offset corrected
+X  drag image not mark when 2 fingers
+
+
+snap to nearest pixel when drawing mask
 restrict brush width to pixel width
 render image masked with svg
-mobile ready
 Save cutouts in collection
+position cutout on screen
+create target area on cutout
+transition to new target on tap
+  target gets to choose transition type
+  target gets name to add to breadcrumb when target selected
