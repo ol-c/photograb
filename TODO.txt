@@ -13,12 +13,11 @@ X reliable zoom marker sizing
 X smooth user zooming
 X svg masks
 X scale svg path to stay constant on screen with zoom
-
-kill running grabcut if new one requested
+X kill running grabcut if new one requested
+X smooth svg masks (collapse points and simlify path)
 
 snap to nearest pixel for mask
 restrict brush width to pixel width
-smooth svg masks (collapse points and simlify path)
 render image masked with svg
-
-show instructions
+mobile ready
+Save cutouts in collection

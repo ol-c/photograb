@@ -48,9 +48,12 @@ Meteor.methods({
       var photograb = Photograbs.findOne(photograbId);
       if (photograb.grabcutPID) {
         try {
-          process.kill(photograb.grabcutPID, 'SIGKILL');
+          var child_process = Npm.require('child_process');
+          var exec = Meteor.wrapAsync(child_process.exec);
+          exec('kill -9 ' + photograb.grabcutPID);
         }
         catch (error) {
+          console.log(error);
           //  in case process exited at odd time/between updates
         }
       }
