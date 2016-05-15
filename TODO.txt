@@ -25,7 +25,7 @@ X render image masked with svg
 
 snap to nearest pixel when drawing mask
 restrict brush width to pixel width
-Save cutouts in collection
+save cutouts in collection
 position cutout on screen
 create target area on cutout
 transition to new target on tap

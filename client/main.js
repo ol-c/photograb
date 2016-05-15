@@ -194,7 +194,7 @@ Template.photograb.events({
   'tap .photograb-inner' : function (event, template) {
     Meteor.call('photograbMode', this._id, this.mode == 'foreground' ? 'background':'foreground');
   },
-  'drag' : function (event, template) {
+  'drag .photograb-input, drag .photograb-output' : function (event, template) {
     //  drag mark if current mark, else drag view
     if (template.currentMark.get()) {
       template.markUpdated.set(new Date());
@@ -203,7 +203,9 @@ Template.photograb.events({
       var y = (event.y-off.top)/template.scale.get();
       template.currentMark.get().path.push([x,y]);
     }
-    else {
+  },
+  drag : function (event, template) {
+    if (!template.currentMark.get()) {
       template.x.set(template.x.get() + event.dx);
       template.y.set(template.y.get() + event.dy);
     }
