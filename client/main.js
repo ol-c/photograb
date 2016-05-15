@@ -35,7 +35,7 @@ Template.photograb.onCreated(function () {
   this.scale = new ReactiveVar(1);
   this.scaledWidth = new ReactiveVar(0);
   this.scaledHeight = new ReactiveVar(0);
-  this.maxMaskDimension = new ReactiveVar(1024);
+  this.maxMaskDimension = new ReactiveVar(512);
 });
 
 Template.photograb.onRendered(function () {
@@ -76,14 +76,19 @@ Template.photograb.helpers({
   maskPath : function () {
     var combinedPath = '';
     if (!this.mask) return;
-    var pathStringGenerator = d3.svg.line().interpolate('monotone');
+    var pathStringGenerator = d3.svg.line().interpolate('linear');
     var data = this;
+    var template = Template.instance();
     this.mask.forEach(function (path) {
       //  end on the first
       path.push(path[0]);
       //  smooth the path
       console.log('===')
-      console.log(path.length)
+      console.log(path.length);
+      //  threshold is 2 pixels of the calculated mask
+      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
+      path = dejag(path, threshold);
+      path = simplify(path, threshold, true);
       //  resolution should be 2 pixels of compressed image sent to server
       //path = simplify(path, resolution, true);
       console.log(path.length);

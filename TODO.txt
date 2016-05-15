@@ -15,6 +15,9 @@ X svg masks
 X scale svg path to stay constant on screen with zoom
 
 kill running grabcut if new one requested
+
+snap to nearest pixel for mask
+restrict brush width to pixel width
 smooth svg masks (collapse points and simlify path)
 render image masked with svg
 
