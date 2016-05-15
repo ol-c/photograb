@@ -69,6 +69,11 @@ body
   pointer-events : none;
 }
 
+.mark
+{
+  pointer-events : visiblePainted;
+}
+
 .photograb-input-controls
 {
   position : absolute;

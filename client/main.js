@@ -73,25 +73,44 @@ Template.photograb.helpers({
   outputData : function () {
     return Template.instance().outputData.get();
   },
+  clipPath : function () {
+    if (!this.mask) return;
+    var combinedPath = '';
+    var template = Template.instance();
+    var data = this;
+    data.mask.forEach(function (path) {
+      //  smooth the path
+      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
+      path = dejag(path, threshold);
+      path = simplify(path, threshold, true);
+      //  end on the first
+      path.push(path[0]);
+      path.forEach(function (point) {
+        var separator = combinedPath.length? ',' : '';
+        combinedPath += separator + point[0]+'px '+point[1]+'px';
+      });
+      if (combinedPath.length) {
+        combinedPath += ',0px 0px';
+      }
+    });
+    return 'polygon(' + combinedPath + ')';
+  },
   maskPath : function () {
     var combinedPath = '';
     if (!this.mask) return;
     var pathStringGenerator = d3.svg.line().interpolate('linear');
     var data = this;
     var template = Template.instance();
-    this.mask.forEach(function (path) {
+    data.mask.forEach(function (path) {
       //  end on the first
-      path.push(path[0]);
       //  smooth the path
-      console.log('===')
-      console.log(path.length);
       //  threshold is 2 pixels of the calculated mask
       var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
       path = dejag(path, threshold);
       path = simplify(path, threshold, true);
+      path.push(path[0]);
       //  resolution should be 2 pixels of compressed image sent to server
       //path = simplify(path, resolution, true);
-      console.log(path.length);
       combinedPath += pathStringGenerator(path);
     });
     combinedPath += 'Z';
@@ -175,7 +194,7 @@ Template.photograb.events({
   'tap .photograb-inner' : function (event, template) {
     Meteor.call('photograbMode', this._id, this.mode == 'foreground' ? 'background':'foreground');
   },
-  'drag .photograb-input, drag .photograb-output' : function (event, template) {
+  'drag' : function (event, template) {
     //  drag mark if current mark, else drag view
     if (template.currentMark.get()) {
       template.markUpdated.set(new Date());
