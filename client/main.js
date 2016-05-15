@@ -33,9 +33,15 @@ Template.photograb.onCreated(function () {
   this.x = new ReactiveVar(0);
   this.y = new ReactiveVar(0);
   this.scale = new ReactiveVar(1);
+  this.fittingScale = new ReactiveVar(1);
   this.scaledWidth = new ReactiveVar(0);
   this.scaledHeight = new ReactiveVar(0);
   this.maxMaskDimension = new ReactiveVar(512);
+
+  this.xMin = new ReactiveVar(-Infinity);
+  this.xMax = new ReactiveVar(Infinity);
+  this.yMin = new ReactiveVar(-Infinity);
+  this.yMax = new ReactiveVar(Infinity);
 });
 
 Template.photograb.onRendered(function () {
@@ -54,6 +60,10 @@ Template.photograb.onRendered(function () {
     template.scale.set(scale);
     template.scaledWidth.set(iw/2*scale);
     template.scaledHeight.set(ih*scale);
+    template.fittingScale.set(scale);
+
+    template.xMax.set(template.x.get());
+    template.yMax.set(template.y.get());
   };
 });
 
@@ -217,6 +227,18 @@ Template.photograb.events({
       Meteor.call('addMark', template.data._id, current);
       template.markUpdated.set(new Date());
       template.currentMark.set();
+    }
+    if (template.scale.get() < template.fittingScale.get()) {
+      template.resetView();
+    }
+    else {
+      var xMin = template.xMin.get();
+      var xMax = template.xMax.get();
+      var yMin = template.yMin.get();
+      var yMax = template.yMax.get();
+
+      template.x.set(Math.min(xMax, Math.max(xMin, template.x.get())));
+      template.y.set(Math.min(yMax, Math.max(yMin, template.y.get())));
     }
   }
 });

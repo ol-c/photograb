@@ -22,7 +22,7 @@ X  y position offset corrected
 X  drag image not mark when 2 fingers
 X render image masked with svg
 
-
+restrict zoom boundaries (on drop) (half done)
 snap to nearest pixel when drawing mask
 restrict brush width to pixel width
 save cutouts in collection
