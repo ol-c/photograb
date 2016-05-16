@@ -2,8 +2,13 @@
 var photograbId = new ReactiveVar();
 
 Meteor.call('initializePhotograb', function (error, id) {
-  console.log(id);
+  Meteor.subscribe('photograbs', id);
+  Meteor.subscribe('marks', id);
   photograbId.set(id);
+});
+
+Template.registerHelper('equals', function (a, b) {
+  return a == b;
 });
 
 Template.registerHelper('currentPhotograb', function () {
@@ -199,8 +204,11 @@ Template.photograb.events({
     template.x.set(x + (event.x-(off.left+x))*(1-event.scale));
     template.y.set(y + (event.y-(off.top +y))*(1-event.scale));
   },
-  'tap .photograb-inner' : function (event, template) {
-    Meteor.call('photograbMode', this._id, this.mode == 'foreground' ? 'background':'foreground');
+  'tap .photograb-background-brush' : function (event, template) {
+    Meteor.call('photograbMode', this._id, 'background');
+  },
+  'tap .photograb-foreground-brush' : function (event, template) {
+    Meteor.call('photograbMode', this._id, 'foreground');
   },
   'drag .photograb-input, drag .photograb-output' : function (event, template) {
     //  drag mark if current mark, else drag view

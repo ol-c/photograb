@@ -18,6 +18,8 @@
     <div class="photograb-input-controls">
       <input type="file">
     </div>
+    <div class="photograb-foreground-brush {{#if equals mode 'foreground'}}photograb-active-brush{{/if}}"></div>
+    <div class="photograb-background-brush {{#if equals mode 'background'}}photograb-active-brush{{/if}}"></div>
     <div class="photograb-inner"
          style="left:{{x}}px;
                 top:{{y}}px;

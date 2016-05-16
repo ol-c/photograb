@@ -112,3 +112,36 @@ body
   animation-fill-mode: none;
   animation-play-state: running; 
 }
+
+
+.photograb-foreground-brush,
+.photograb-background-brush
+{
+  z-index : 1;
+  width : 64px;
+  height : 64px;
+  position : absolute;
+  top : 8px;
+  border-radius : 32px;
+  opacity : 0.25;
+  transition : top 0.1s;
+}
+
+.photograb-foreground-brush
+{
+  background : limegreen;
+  right : 76px;
+}
+
+.photograb-background-brush
+{
+  background : tomato;
+  right : 4px;
+}
+
+.photograb-active-brush
+{
+  top : 4px;
+  box-shadow: 4px 4px 4px #444444;
+  opacity : 0.75;
+}

@@ -24,9 +24,12 @@ X render image masked with svg
 X restrict drag boundaries
 X restrict min zoom
 
+X publications and subscriptions
+
+
+show drawing state
 restrict max zoom (downsampled mask pixel = brush size)
 snap to nearest pixel when drawing mask
-show drawing state
 save cutouts in collection
 
 position cutout on screen
