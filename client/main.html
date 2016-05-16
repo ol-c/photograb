@@ -32,6 +32,7 @@
     </div>
     <div class="photograb-foreground-brush {{#if equals mode 'foreground'}}photograb-active-brush{{/if}}"></div>
     <div class="photograb-background-brush {{#if equals mode 'background'}}photograb-active-brush{{/if}}"></div>
+    {{#if vectorMask}}<div class="photograb-save-button">Save</div>{{/if}}
     <div class="photograb-inner"
          style="left:{{x}}px;
                 top:{{y}}px;
@@ -59,7 +60,6 @@
              src="{{imageData}}"
              style="-webkit-clip-path:{{clipPath}};
                     clip-path:{{clipPath}};">
-        <img style="position:absolute;top:0;left:0;" src="{{rasterMask}}">
         <svg class="output-overlay"
              width="{{width}}"
              height="{{height}}"

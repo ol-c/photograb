@@ -86,6 +86,15 @@ Template.photograb.helpers({
   imageData : function () {
     return Template.instance().imageData.get();
   },
+  maskedImageData : function () {
+    var imageData = Template.instance().imageData.get();
+    if (this.rasterMask) {
+      return getImageData(imageData, 1, 'png', this.rasterMask);
+    }
+    else {
+      return imageData;
+    }
+  },
   outputData : function () {
     return Template.instance().outputData.get();
   },
@@ -158,14 +167,35 @@ Template.photograb.helpers({
 });
 
 
-function getImageData(image, scale, format) {
+function getImageData(imageData, scale, format, maskData) {
   var canvas  = document.createElement('canvas');
   var context = canvas.getContext('2d');
+  var image = imageData;
+
+  //  if imageData is string, make it an object
+  if (typeof imageData == typeof '') {
+    image = new Image();
+    image.src = imageData;
+  }
   canvas.width  = image.width *scale;
   canvas.height = image.height*scale;
+
+  if (maskData) {
+    if (typeof maskData == 'string') {
+      var mask = new Image();
+      mask.src = maskData;
+      context.drawImage(mask,0,0,canvas.width,canvas.height);
+    }
+    else {
+      //  assume it is an array of paths
+      //  TODO: draw paths
+    }
+    context.globalCompositeOperation = 'source-in';
+  }
+
   context.drawImage(image,0,0,canvas.width,canvas.height);
-  var quality = 0.1;
-  return canvas.toDataURL('image/'+format);
+  var quality = 1;
+  return canvas.toDataURL('image/'+format, quality);
 }
 
 Template.photograb.events({
@@ -178,23 +208,26 @@ Template.photograb.events({
       template.imageData.set(imageData);
       // send smaller image to process
       var image = new Image();
-      image.onload = function () {
-        var widthScale = template.maxMaskDimension.get()/image.width;
-        var heightScale = template.maxMaskDimension.get()/image.height;
-        var scale = Math.min(1, Math.min(widthScale, heightScale));
-        var compressedImageData = getImageData(image, scale, 'jpeg');
-
-        Meteor.call('photograbScale', template.data._id, scale);
-        Meteor.call('photograbImage', template.data._id, compressedImageData);
-        template.$('.photograb-inner').fadeIn(500);
-        template.resetView();
-      }
       image.src = imageData;
+        
+      var widthScale = template.maxMaskDimension.get()/image.width;
+      var heightScale = template.maxMaskDimension.get()/image.height;
+      var scale = Math.min(1, Math.min(widthScale, heightScale));
+      var compressedImageData = getImageData(image, scale, 'jpeg');
+
+      Meteor.call('photograbScale', template.data._id, scale);
+      Meteor.call('photograbImage', template.data._id, compressedImageData);
+      template.$('.photograb-inner').fadeIn(500);
+      Meteor.setTimeout(template.resetView);
     }
     reader.readAsDataURL(files[0]);
   },
   'touch .photograb-input-controls' : function (event, template) {
     template.$('input').trigger('click');
+  },
+  'tap .photograb-save-button' : function (event, template) {
+    var output = template.$('.photograb-result')[0];
+    var imageData = getImageData(output, 1, 'png', template.data.vectorMask);
   },
   'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {

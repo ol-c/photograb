@@ -79,10 +79,13 @@ contours = [[tuple(point[0]+halfPixel) for point in contour/scale] for contour i
 #cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
 # cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
 
-#scale image a to fit
+# blur and scale image a to fit nicely
 img_a = cv2.GaussianBlur(img_a, (11,11),11)
 img_a = cv2.resize(img_a, (info['width'], info['height']))
 ret, img_a = cv2.threshold(img_a,127,255,cv2.THRESH_BINARY)
+
+# add transparency
+img_a = cv2.merge((img_a,img_a,img_a,img_a))
 cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
 
 ##########################################
