@@ -25,8 +25,8 @@ X publications and subscriptions
 X show drawing state
 X brush size = shown brush size from controls (64px)
 X restrict max zoom (downsampled mask pixel = brush size)
+X better uploader image
 
-better uploader image
 save cutouts in collection
 cutout compositor:
   cutout graph as editor
