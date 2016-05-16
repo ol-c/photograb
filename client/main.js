@@ -157,26 +157,36 @@ Template.photograb.helpers({
 
 });
 
+
+function getImageData(image, scale, format) {
+  var canvas  = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+  canvas.width  = image.width *scale;
+  canvas.height = image.height*scale;
+  context.drawImage(image,0,0,canvas.width,canvas.height);
+  var quality = 0.1;
+  return canvas.toDataURL('image/'+format);
+}
+
 Template.photograb.events({
   'change input' : function (event, template) {
     var files = event.target.files;
     var reader = new FileReader();
+    template.$('.photograb-inner').hide();
     reader.onload = function(frEvent) {
       var imageData = frEvent.target.result;
       template.imageData.set(imageData);
       // send smaller image to process
       var image = new Image();
       image.onload = function () {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var scale = Math.min(1, Math.min(template.maxMaskDimension.get()/image.height, template.maxMaskDimension.get()/image.width));
-        canvas.width = image.width*scale;
-        canvas.height = image.height*scale;
+        var widthScale = template.maxMaskDimension.get()/image.width;
+        var heightScale = template.maxMaskDimension.get()/image.height;
+        var scale = Math.min(1, Math.min(widthScale, heightScale));
+        var compressedImageData = getImageData(image, scale, 'jpeg');
+
         Meteor.call('photograbScale', template.data._id, scale);
-        context.drawImage(image,0,0, canvas.width, canvas.height);
-        var compressedImageData = canvas.toDataURL('image/jpeg');
         Meteor.call('photograbImage', template.data._id, compressedImageData);
-        
+        template.$('.photograb-inner').fadeIn(500);
         template.resetView();
       }
       image.src = imageData;
