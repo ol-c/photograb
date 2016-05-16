@@ -1,4 +1,5 @@
 //  initialize the photograb
+var BRUSH_SIZE = 64;
 var photograbId = new ReactiveVar();
 
 Meteor.call('initializePhotograb', function (error, id) {
@@ -68,6 +69,8 @@ Template.photograb.onRendered(function () {
     template.xMax.set(template.x.get());
     template.yMax.set(template.y.get());
   };
+
+  $(window).on('resize', template.resetView);
 });
 
 Template.photograb.helpers({
@@ -180,6 +183,9 @@ Template.photograb.events({
     }
     reader.readAsDataURL(files[0]);
   },
+  'touch .photograb-input-controls' : function (event, template) {
+    template.$('input').trigger('click');
+  },
   'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {
     Meteor.call('photograbDimensions', this._id, event.target.width, event.target.height);
@@ -187,7 +193,7 @@ Template.photograb.events({
   'touch' : function (event, template) {
     if (event.fingers == 1) {
       template.markUpdated.set(new Date());
-      var newCurrent = newMark(template.data.mode,Math.round(5/template.scale.get()))
+      var newCurrent = newMark(template.data.mode,Math.round(BRUSH_SIZE/2/template.scale.get()))
       newCurrent.current = true;
       template.currentMark.set(newCurrent);
     }
@@ -200,9 +206,18 @@ Template.photograb.events({
     var off = $(template.firstNode).offset();
     var x = template.x.get();
     var y = template.y.get();
-    template.scale.set(template.scale.get()*event.scale);
-    template.x.set(x + (event.x-(off.left+x))*(1-event.scale));
-    template.y.set(y + (event.y-(off.top +y))*(1-event.scale));
+    var scale = event.scale;
+    //  set max scale as scale when the width of 1 downsampled mask pixel on screen = BRUSH_SIZE*2
+    var nextScale = template.scale.get()*event.scale;
+    var maxScale = template.maxMaskDimension.get()/BRUSH_SIZE/2;
+    if (nextScale > maxScale) {
+      nextScale = maxScale;
+      scale = maxScale / template.scale.get();
+    }
+    template.scale.set(nextScale);
+
+    template.x.set(x + (event.x-(off.left+x))*(1-scale));
+    template.y.set(y + (event.y-(off.top +y))*(1-scale));
   },
   'tap .photograb-background-brush' : function (event, template) {
     Meteor.call('photograbMode', this._id, 'background');

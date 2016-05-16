@@ -5,7 +5,6 @@ X upload image
 X canvas masking on transparency
 X side-by-side input and output
 X visual feedback for grabcutting in progress (show unresolved marks on output)
-
 X resize picture sent to server
 X auto update grabcuts
 X size viewed images to container
@@ -15,7 +14,6 @@ X svg masks
 X scale svg path to stay constant on screen with zoom
 X kill running grabcut if new one requested
 X smooth svg masks (collapse points and simlify path)
-
 X pulse rendering marks
 X mobile ready:
 X  y position offset corrected
@@ -23,17 +21,17 @@ X  drag image not mark when 2 fingers
 X render image masked with svg
 X restrict drag boundaries
 X restrict min zoom
-
 X publications and subscriptions
+X show drawing state
+X brush size = shown brush size from controls (64px)
+X restrict max zoom (downsampled mask pixel = brush size)
 
-
-show drawing state
-restrict max zoom (downsampled mask pixel = brush size)
-snap to nearest pixel when drawing mask
+better uploader image
 save cutouts in collection
-
-position cutout on screen
-create target area on cutout
-transition to new target on tap
+cutout compositor:
+  cutout graph as editor
+  link types are transition types
+  create target area on cutout
+cutout viewer:
   target gets to choose transition type
   target gets name to add to breadcrumb when target selected

@@ -145,3 +145,13 @@ body
   box-shadow: 4px 4px 4px #444444;
   opacity : 0.75;
 }
+
+.photograb-input-controls
+{
+  padding : 8px;
+}
+
+.photograb-input-controls input
+{
+  display : none;
+}
