@@ -90,11 +90,11 @@ Template.photograb.helpers({
     return Template.instance().outputData.get();
   },
   clipPath : function () {
-    if (!this.mask) return;
+    if (!this.vectorMask) return;
     var combinedPath = '';
     var template = Template.instance();
     var data = this;
-    data.mask.forEach(function (path) {
+    data.vectorMask.forEach(function (path) {
       //  smooth the path
       var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
       path = dejag(path, threshold);
@@ -113,11 +113,11 @@ Template.photograb.helpers({
   },
   maskPath : function () {
     var combinedPath = '';
-    if (!this.mask) return;
+    if (!this.vectorMask) return;
     var pathStringGenerator = d3.svg.line().interpolate('linear');
     var data = this;
     var template = Template.instance();
-    data.mask.forEach(function (path) {
+    data.vectorMask.forEach(function (path) {
       //  end on the first
       //  smooth the path
       //  threshold is 2 pixels of the calculated mask

@@ -59,7 +59,7 @@ mask, bgdModel, fgdModel = cv2.grabCut(img,mask,None,bgdModel,fgdModel,5,cv2.GC_
 img_a = np.where((mask==2)|(mask==0),0,255).astype('uint8')
 
 # find contours
-img_a, contours, heirarchy = cv2.findContours(img_a,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+contour_img, contours, heirarchy = cv2.findContours(img_a.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 #scale contours and flatten array since points are [[point]]
 # add .5 to be in center of edge pixel
@@ -77,8 +77,13 @@ contours = [[tuple(point[0]+halfPixel) for point in contour/scale] for contour i
 #img_rgba = cv2.merge((img_b*mask, img_g*mask, img_r*mask, img_a))
 #### write the transparency image (resize for smooth masking)
 #cv2.imwrite(info['path'] + '-grabcut.png', img_rgba);
-#cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
 # cv2.imwrite(info['path'] + '-grabcut-mask.png', mask_rgba);
+
+#scale image a to fit
+img_a = cv2.GaussianBlur(img_a, (11,11),11)
+img_a = cv2.resize(img_a, (info['width'], info['height']))
+ret, img_a = cv2.threshold(img_a,127,255,cv2.THRESH_BINARY)
+cv2.imwrite(info['path'] + '-grabcut-mask.png', img_a);
 
 ##########################################
 # to return base64 version of image mask
@@ -89,4 +94,7 @@ contours = [[tuple(point[0]+halfPixel) for point in contour/scale] for contour i
 
 
 # to return JSON of contour information
-print json.dumps(contours)
+print json.dumps({
+  "vector" : contours,
+  "raster" : "data:image/png;base64," + base64.b64encode(open(info['path'] + '-grabcut-mask.png', "rb").read())
+})

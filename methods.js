@@ -60,6 +60,8 @@ Meteor.methods({
       var marks = Marks.find({photograb:photograbId}).fetch();
       var input = {
         marks : marks,
+        width : photograb.width,
+        height : photograb.height,
         scale : photograb.scale,
         path : '/home/jason/tmp/' + photograbId
       };
@@ -78,7 +80,11 @@ Meteor.methods({
             Marks.update(mark._id, {$set : {applied : true}});
           });
           //  set photograb mask
-          Photograbs.update(photograbId, {$set:{mask:JSON.parse(stdout)}});
+          var result = JSON.parse(stdout);
+          Photograbs.update(photograbId, {$set:{
+            vectorMask:result.vector,
+            rasterMask:result.raster
+          }});
         }
       });
       Photograbs.update(photograbId, {$set : {grabcutPID : child_process.pid}});
