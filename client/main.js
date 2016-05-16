@@ -38,9 +38,7 @@ Template.photograb.onCreated(function () {
   this.scaledHeight = new ReactiveVar(0);
   this.maxMaskDimension = new ReactiveVar(512);
 
-  this.xMin = new ReactiveVar(-Infinity);
   this.xMax = new ReactiveVar(Infinity);
-  this.yMin = new ReactiveVar(-Infinity);
   this.yMax = new ReactiveVar(Infinity);
 });
 
@@ -232,10 +230,15 @@ Template.photograb.events({
       template.resetView();
     }
     else {
-      var xMin = template.xMin.get();
       var xMax = template.xMax.get();
-      var yMin = template.yMin.get();
       var yMax = template.yMax.get();
+
+      var scale = template.scale.get();
+      var fittingScale = template.fittingScale.get();
+
+      var inner = template.$('.photograb-inner');
+      var xMin = xMax - inner.width() *scale + inner.width() *fittingScale;
+      var yMin = yMax - inner.height()*scale + inner.height()*fittingScale;
 
       template.x.set(Math.min(xMax, Math.max(xMin, template.x.get())));
       template.y.set(Math.min(yMax, Math.max(yMin, template.y.get())));
