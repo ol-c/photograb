@@ -46,6 +46,17 @@ Template.photograb.onCreated(function () {
 
   this.xMax = new ReactiveVar(Infinity);
   this.yMax = new ReactiveVar(Infinity);
+
+  // mask update on delay loop
+  var currentTimeout = null;
+  this.updateMask = function () {
+    if (currentTimeout) clearTimeout(currentTimeout);
+    var thisTimeout = setTimeout(function () {
+      Meteor.call('updateMask', template.data._id);
+      currentTimeout = null;
+    }, 1500);
+    currentTimeout = thisTimeout;
+  }
 });
 
 Template.photograb.onRendered(function () {
@@ -187,8 +198,22 @@ function getImageData(imageData, scale, format, maskData) {
       context.drawImage(mask,0,0,canvas.width,canvas.height);
     }
     else {
+      context.beginPath();
       //  assume it is an array of paths
-      //  TODO: draw paths
+      maskData.forEach(function (path) {
+        path = path.concat([]);
+        context.moveTo(path[0][0], path[0][1]);
+        //  end on first
+        path.push(path.shift());
+        path.forEach(function (point) {
+          context.lineTo(point[0], point[1]);
+        });
+      });
+      context.closePath();
+      //  set drawn image as clipping mask
+      context.clip();
+      context.drawImage(image,0,0);
+      // context.restore();
     }
     context.globalCompositeOperation = 'source-in';
   }
@@ -227,7 +252,17 @@ Template.photograb.events({
   },
   'tap .photograb-save-button' : function (event, template) {
     var output = template.$('.photograb-result')[0];
-    var imageData = getImageData(output, 1, 'png', template.data.vectorMask);
+    var data = this;
+    var maskData = [];
+    this.vectorMask.forEach(function (path) {
+      //  smooth the path
+      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
+      path = dejag(path, threshold);
+      path = simplify(path, threshold, true);
+      maskData.push(path);
+    });
+    var imageData = getImageData(output, 1, 'png', maskData);
+    window.open(imageData);
   },
   'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {
@@ -276,6 +311,7 @@ Template.photograb.events({
       var x = (event.x-off.left)/template.scale.get();
       var y = (event.y-off.top)/template.scale.get();
       template.currentMark.get().path.push([x,y]);
+      template.updateMask();
     }
   },
   drag : function (event, template) {
@@ -288,7 +324,10 @@ Template.photograb.events({
     if (template.currentMark.get()) {
       var current = template.currentMark.get();
       delete current.current;
-      Meteor.call('addMark', template.data._id, current);
+      if (current.path.length > 1) {
+        Meteor.call('addMark', template.data._id, current);
+        template.updateMask();
+      }
       template.markUpdated.set(new Date());
       template.currentMark.set();
     }

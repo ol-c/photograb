@@ -36,12 +36,10 @@ Meteor.methods({
   addMark : function (photograbId, mark) {
     mark.photograb = photograbId,
     Marks.insert(mark);
-    Meteor.call('updateMask', photograbId);
   },
   removeMark : function (id) {
     var photograbId = Marks.findOne(id).photograb;
     Marks.remove(id);
-    Meteor.call('updateMask', photograbId);
   },
   updateMask : function (photograbId) {
     if (Meteor.isServer) {
