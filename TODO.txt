@@ -28,8 +28,8 @@ X restrict max zoom (downsampled mask pixel = brush size)
 X better uploader image
 X download image
 X update delay in interface
-
-image scaling bug
+X choosing new image cleans up photograb object state
+X image scaling bug
 
 save cutouts in collection
 cutout compositor:

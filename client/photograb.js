@@ -206,6 +206,8 @@ function getImageData(imageData, scale, format, maskData) {
 
 Template.photograb.events({
   'change input' : function (event, template) {
+    Meteor.call('resetPhotograb', this._id);
+    template.currentMark.set();
     var files = event.target.files;
     var reader = new FileReader();
     template.$('.photograb-inner').hide();
@@ -220,7 +222,7 @@ Template.photograb.events({
       var heightScale = template.maxMaskDimension.get()/image.height;
       var scale = Math.min(1, Math.min(widthScale, heightScale));
       var compressedImageData = getImageData(image, scale, 'jpeg');
-
+      
       Meteor.call('photograbScale', template.data._id, scale);
       Meteor.call('photograbImage', template.data._id, compressedImageData);
       template.$('.photograb-inner').fadeIn(500);
@@ -268,7 +270,8 @@ Template.photograb.events({
     var scale = event.scale;
     //  set max scale as scale when the width of 1 downsampled mask pixel on screen = BRUSH_SIZE*2
     var nextScale = template.scale.get()*event.scale;
-    var maxScale = template.maxMaskDimension.get()/BRUSH_SIZE/2;
+    //  adust by fitting scale to normalize for screen pixels
+    var maxScale = template.maxMaskDimension.get()/BRUSH_SIZE;
     if (nextScale > maxScale) {
       nextScale = maxScale;
       scale = maxScale / template.scale.get();

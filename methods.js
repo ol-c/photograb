@@ -15,6 +15,14 @@ Meteor.methods({
     });
     return id;
   },
+  resetPhotograb : function (_id) {
+    Photograbs.update(_id, {
+      width : 0,
+      height : 0,
+      scale : 1,
+      mode : 'foreground'
+    });
+  },
   photograbMode : function (photograbId, mode) {
     Photograbs.update(photograbId, {$set:{mode:mode}});
   },
