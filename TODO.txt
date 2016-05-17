@@ -29,6 +29,8 @@ X better uploader image
 X download image
 X update delay in interface
 
+image scaling bug
+
 save cutouts in collection
 cutout compositor:
   cutout graph as editor

@@ -16,8 +16,6 @@ Template.registerHelper('currentPhotograb', function () {
   return Photograbs.findOne(photograbId.get());
 });
 
-var originalWidth = window.innerWidth;
-
 function newMark(type, radius) {
   return {
     path : [],
@@ -29,8 +27,6 @@ function newMark(type, radius) {
 
 Template.photograb.onCreated(function () {
   var template = this;
-  // set radius according to zoom level
-  var radius = 5;
   this.markUpdated = new ReactiveVar();
   this.currentMark = new ReactiveVar();
   this.imageData   = new ReactiveVar();
@@ -348,38 +344,5 @@ Template.photograb.events({
       template.x.set(Math.min(xMax, Math.max(xMin, template.x.get())));
       template.y.set(Math.min(yMax, Math.max(yMin, template.y.get())));
     }
-  }
-});
-
-Template.mark.helpers({
-  stroke : function () {
-    var typeToColor = {
-      'probable_foreground'  : 'rgba(0,255,0,0.25)',
-      'foreground'  : 'rgba(0,255,0,0.5)',
-      'background'  : 'rgba(255,0,0,0.5)'
-    }
-    return typeToColor[this.type];
-  },
-  strokeWidth : function () {
-    return this.radius*2;
-  },
-  path : function () {
-    if (this.path[0]) {
-      var path = "M" + this.path[0][0] + ' ' + this.path[0][1];
-      this.path.forEach(function (point) {
-        path += 'L' + point[0] + ' ' + point[1];
-      });
-      return path;
-    }
-  },
-  waitingForApplication : function () {
-    return !this.applied && !this.current;
-  }
-});
-
-Template.mark.events({
-  tap : function (event, template) {
-    Meteor.call('removeMark', template.data._id);
-    event.stopPropagation();
   }
 });
