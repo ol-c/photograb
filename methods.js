@@ -22,6 +22,7 @@ Meteor.methods({
       scale : 1,
       mode : 'foreground'
     });
+    Marks.remove({photograb : _id});
   },
   photograbMode : function (photograbId, mode) {
     Photograbs.update(photograbId, {$set:{mode:mode}});
