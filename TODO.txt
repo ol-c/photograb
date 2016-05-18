@@ -31,7 +31,10 @@ X update delay in interface
 X choosing new image cleans up photograb object state
 X image scaling bug
 
-save cutouts in collection
+chunked messages to upload image (start right on file input change)
+cutout on server and save cropped
+save cutout document
+
 cutout compositor:
   cutout graph as editor
   link types are transition types

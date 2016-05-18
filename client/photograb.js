@@ -209,9 +209,15 @@ Template.photograb.events({
     Meteor.call('resetPhotograb', this._id);
     template.currentMark.set();
     var files = event.target.files;
+
+    // if no files, don't try to read it
+    if (!files[0]) {
+      return;
+    }
+
     var reader = new FileReader();
     template.$('.photograb-inner').hide();
-    reader.onload = function(frEvent) {
+    reader.onloadend = function(frEvent) {
       var imageData = frEvent.target.result;
       template.imageData.set(imageData);
       // send smaller image to process
@@ -229,6 +235,9 @@ Template.photograb.events({
       Meteor.setTimeout(template.resetView);
     }
     reader.readAsDataURL(files[0]);
+    upload(files[0], function (error, uploadId) {
+      Meteor.call('photograbUpload', uploadId);
+    });
   },
   'touch .photograb-input-controls' : function (event, template) {
     template.$('input').trigger('click');

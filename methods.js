@@ -11,9 +11,13 @@ Meteor.methods({
       width : 0,
       height : 0,
       scale : 1,
-      mode : 'foreground'
+      mode : 'foreground',
+      upload : null
     });
     return id;
+  },
+  photograbUpload : function (photograbId, uploadId) {
+    Photograbs.update(photograbId, {$set : {upload : uploadId}});
   },
   resetPhotograb : function (_id) {
     Photograbs.update(_id, {
