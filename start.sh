@@ -1,1 +1,1 @@
-sudo meteor -p 80
+sudo meteor -p 80 --settings settings.json

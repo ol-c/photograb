@@ -2,3 +2,4 @@ node_modules/
 OpenCV
 .DS_Store
 public
+settings.json

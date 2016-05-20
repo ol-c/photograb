@@ -30,8 +30,8 @@ X download image
 X update delay in interface
 X choosing new image cleans up photograb object state
 X image scaling bug
+X chunked messages to upload image (start right on file input change)
 
-chunked messages to upload image (start right on file input change)
 cutout on server and save cropped
 save cutout document
 

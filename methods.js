@@ -5,9 +5,17 @@ function grabcut(input, callback) {
   return exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
 }
 
+function cutout(imagePath, vectorMask, callback) {
+  var child_process = Npm.require('child_process');
+  var exec = Meteor.wrapAsync(child_process.exec);
+  var options = {maxBuffer: 1024 * 10000};
+  return exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
+}
+
 Meteor.methods({
   initializePhotograb : function () {
     var id =  Photograbs.insert({
+      started : new Date(),
       width : 0,
       height : 0,
       scale : 1,
@@ -20,12 +28,12 @@ Meteor.methods({
     Photograbs.update(photograbId, {$set : {upload : uploadId}});
   },
   resetPhotograb : function (_id) {
-    Photograbs.update(_id, {
+    Photograbs.update(_id, {$set : {
       width : 0,
       height : 0,
       scale : 1,
       mode : 'foreground'
-    });
+    }});
     Marks.remove({photograb : _id});
   },
   photograbMode : function (photograbId, mode) {
@@ -99,6 +107,12 @@ Meteor.methods({
         }
       });
       Photograbs.update(photograbId, {$set : {grabcutPID : child_process.pid}});
+    }
+  },
+  photograbSave : function (photograbId) {
+    if (Meteor.isServer) {
+      var photograb = Photograbs.findOne(photograbId);
+      uploadS3('photograb', '/home/jason/uploads/' + photograb.upload);
     }
   }
 });

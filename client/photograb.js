@@ -95,13 +95,9 @@ Template.photograb.helpers({
     var combinedPath = '';
     var template = Template.instance();
     var data = this;
-    data.vectorMask.forEach(function (path) {
-      //  smooth the path
-      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
-      path = dejag(path, threshold);
-      path = simplify(path, threshold, true);
-      //  end on the first
-      path.push(path[0]);
+    var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
+    var smoothed = smoothCutout(data.vectorMask, threshold);
+    smoothed.forEach(function (path) {
       path.forEach(function (point) {
         var separator = combinedPath.length? ',' : '';
         combinedPath += separator + point[0]+'px '+point[1]+'px';
@@ -118,16 +114,9 @@ Template.photograb.helpers({
     var pathStringGenerator = d3.svg.line().interpolate('linear');
     var data = this;
     var template = Template.instance();
-    data.vectorMask.forEach(function (path) {
-      //  end on the first
-      //  smooth the path
-      //  threshold is 2 pixels of the calculated mask
-      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
-      path = dejag(path, threshold);
-      path = simplify(path, threshold, true);
-      path.push(path[0]);
-      //  resolution should be 2 pixels of compressed image sent to server
-      //path = simplify(path, resolution, true);
+    var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
+    var smoothed = smoothCutout(data.vectorMask, threshold);
+    smoothed.forEach(function (path) {
       combinedPath += pathStringGenerator(path);
     });
     combinedPath += 'Z';
@@ -159,7 +148,7 @@ Template.photograb.helpers({
 });
 
 
-function getImageData(imageData, scale, format, maskData) {
+function getImageData(imageData, scale, format, maskData, asBuffer) {
   var canvas  = document.createElement('canvas');
   var context = canvas.getContext('2d');
   var image = imageData;
@@ -179,8 +168,8 @@ function getImageData(imageData, scale, format, maskData) {
       context.drawImage(mask,0,0,canvas.width,canvas.height);
     }
     else {
-      context.beginPath();
       //  assume it is an array of paths
+      context.beginPath();
       maskData.forEach(function (path) {
         path = path.concat([]);
         context.moveTo(path[0][0], path[0][1]);
@@ -200,8 +189,7 @@ function getImageData(imageData, scale, format, maskData) {
   }
 
   context.drawImage(image,0,0,canvas.width,canvas.height);
-  var quality = 1;
-  return canvas.toDataURL('image/'+format, quality);
+  return canvas.toDataURL('image/'+format);
 }
 
 Template.photograb.events({
@@ -236,29 +224,18 @@ Template.photograb.events({
     }
     reader.readAsDataURL(files[0]);
     upload(files[0], function (error, uploadId) {
-      Meteor.call('photograbUpload', uploadId);
+      Meteor.call('photograbUpload', template.data._id, uploadId);
     });
   },
   'touch .photograb-input-controls' : function (event, template) {
     template.$('input').trigger('click');
   },
   'tap .photograb-save-button' : function (event, template) {
-    var output = template.$('.photograb-result')[0];
-    var data = this;
-    var maskData = [];
-    this.vectorMask.forEach(function (path) {
-      //  smooth the path
-      var threshold = Math.max(data.width, data.height)/template.maxMaskDimension.get() * 1.5;
-      path = dejag(path, threshold);
-      path = simplify(path, threshold, true);
-      maskData.push(path);
-    });
-    var imageData = getImageData(output, 1, 'png', maskData);
-    window.open(imageData);
+    Meteor.call('photograbSave', template.data._id);
   },
   'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {
-    Meteor.call('photograbDimensions', this._id, event.target.width, event.target.height);
+    Meteor.call('photograbDimensions', template.data._id, event.target.width, event.target.height);
   },
   'touch' : function (event, template) {
     if (event.fingers == 1) {
