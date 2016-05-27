@@ -146,8 +146,7 @@ body
   opacity : 0.75;
 }
 
-.photograb-input-controls,
-.photograb-save-button
+.photograb-done-button
 {
   width : 64px;
   height : 64px;
@@ -160,7 +159,12 @@ body
   display : none;
 }
 
-.photograb-save-button
+.photograb
+{
+  background : white;
+}
+
+.photograb-done-button
 {
   position : absolute;
   bottom : 8px;
@@ -168,14 +172,20 @@ body
   z-index : 1;
 }
 
+.photograb-no-data
+{
+  display : inline-block;
+  width : 64px;
+  height : 64px;
+  margin : 8px;
+}
+
 .photograb-no-data .photograb-input-controls
 {
   position : absolute;
   top : 0;
   left : 0;
-  padding-left : 33%;
-  padding-right : 33%;
-  width : 33%;
+  width : 100%;
   height : 100%;
   background : none;
 }
@@ -184,4 +194,13 @@ body
 {
   width : 100%;
   height : 100%;
+}
+
+.photograb-cancel
+{
+  position : absolute;
+  top : 0;
+  left : 0;
+  width : 64px;
+  height : 64px;
 }

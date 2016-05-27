@@ -11,6 +11,16 @@ function newMark(type, radius) {
 }
 
 Template.photograb.onCreated(function () {
+  this.currentPhotograb = new ReactiveVar();
+});
+
+Template.photograb.helpers({
+  currentPhotograb : function () {
+    return Template.instance().currentPhotograb.get();
+  }
+});
+
+Template.photograbInner.onCreated(function () {
   var template = this;
   this.markUpdated = new ReactiveVar();
   this.currentMark = new ReactiveVar();
@@ -40,7 +50,7 @@ Template.photograb.onCreated(function () {
   }
 });
 
-Template.photograb.onRendered(function () {
+Template.photograbInner.onRendered(function () {
   var template = this;
   var container = $('.photograb');
   var inner = $('.photograb-inner');
@@ -65,7 +75,7 @@ Template.photograb.onRendered(function () {
   $(window).on('resize', template.resetView);
 });
 
-Template.photograb.helpers({
+Template.photograbInner.helpers({
   x            : function () {return Template.instance().x.get();},
   y            : function () {return Template.instance().y.get();},
   scale        : function () {return Template.instance().scale.get();},
@@ -192,7 +202,7 @@ function getImageData(imageData, scale, format, maskData, asBuffer) {
   return canvas.toDataURL('image/'+format);
 }
 
-Template.photograb.events({
+Template.photograbInner.events({
   'change input' : function (event, template) {
     Meteor.call('resetPhotograb', this._id);
     template.currentMark.set();
@@ -230,8 +240,11 @@ Template.photograb.events({
   'touch .photograb-input-controls' : function (event, template) {
     template.$('input').trigger('click');
   },
-  'tap .photograb-save-button' : function (event, template) {
-    Meteor.call('photograbSave', template.data._id);
+  'tap .photograb-done-button' : function (event, template) {
+    
+  },
+  'tap .photograb-cancel' : function (event, template) {
+    console.log('reset to no photograb')
   },
   'touchmove' : function (event, template) {event.preventDefault();},
   'load .photograb-original' : function (event, template) {

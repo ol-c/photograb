@@ -5,11 +5,11 @@ function grabcut(input, callback) {
   return exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
 }
 
-function cutout(imagePath, vectorMask, callback) {
+function cutout(input, callback) {
   var child_process = Npm.require('child_process');
   var exec = Meteor.wrapAsync(child_process.exec);
   var options = {maxBuffer: 1024 * 10000};
-  return exec("python /home/jason/photograb/grabcut.py '" + JSON.stringify(input) + "'", options, callback);
+  return exec("python /home/jason/photograb/cutout.py '" + JSON.stringify(input) + "'", options, callback);
 }
 
 Meteor.methods({
@@ -112,7 +112,19 @@ Meteor.methods({
   photograbSave : function (photograbId) {
     if (Meteor.isServer) {
       var photograb = Photograbs.findOne(photograbId);
-      uploadS3('photograb', '/home/jason/uploads/' + photograb.upload);
+      var input = {
+        filepath : '/home/jason/uploads/' + photograb.upload,
+        cutoutFilepath : '/home/jason/cutouts/' + photograb._id + '.png',
+        maskPaths : photograb.vectorMask
+      };
+      cutout(input, function (error, stdout, stderr) {
+        if (error) {
+          console.log(stdout, error);
+        }
+        else {
+          uploadS3('photograb', input.cutoutFilepath);
+        }
+      });
     }
   }
 });
